@@ -3,10 +3,17 @@ package kg.attractor.microgram.repository;
 import kg.attractor.microgram.model.PublicationLike;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface PublicationLikeRepository
         extends JpaRepository<PublicationLike, Long> {
 
     boolean existsByPublication_IdAndUser_Id(
+            Long publicationId,
+            Long userId
+    );
+
+    Optional<PublicationLike> findByPublication_IdAndUser_Id(
             Long publicationId,
             Long userId
     );

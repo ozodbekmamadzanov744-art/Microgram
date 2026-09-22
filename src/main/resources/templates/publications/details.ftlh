@@ -46,11 +46,19 @@
             <div class="post-actions">
                 <#if currentUser??>
                     <#if liked>
-                        <button class="button-liked"
-                                type="button"
-                                disabled>
-                            ♥ Уже понравилось
-                        </button>
+                        <form method="post"
+                              action="/publications/${publication.id?c}/likes/delete">
+
+                            <@layout.csrf/>
+
+                            <button class="button-liked"
+                                    type="submit"
+                                    title="Убрать лайк"
+                                    aria-label="Убрать лайк"
+                                    aria-pressed="true">
+                                ♥ Уже понравилось
+                            </button>
+                        </form>
                     <#else>
                         <form method="post"
                               action="/publications/${publication.id?c}/likes">
@@ -58,7 +66,9 @@
                             <@layout.csrf/>
 
                             <button class="button-like"
-                                    type="submit">
+                                    type="submit"
+                                    aria-label="Поставить лайк"
+                                    aria-pressed="false">
                                 ♡ Нравится
                             </button>
                         </form>

@@ -120,6 +120,19 @@ public class PublicationController {
         return "redirect:/publications/" + id;
     }
 
+    @PostMapping("/publications/{id}/likes/delete")
+    public String removeLike(
+            @PathVariable Long id,
+            Principal principal
+    ) {
+        likeService.removeLike(
+                id,
+                principal.getName()
+        );
+
+        return "redirect:/publications/" + id;
+    }
+
     @PostMapping("/publications/{id}/comments")
     public String addComment(
             @PathVariable Long id,

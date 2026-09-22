@@ -23,13 +23,7 @@ public class LikeService {
 
     @Transactional
     public void addLike(Long publicationId, String login) {
-        if (login == null || login.isBlank()) {
-            throw new AccessDeniedException(
-                    "Для добавления лайка необходимо войти"
-            );
-        }
-
-        User user = userService.getByLogin(login);
+        User user = findAuthenticatedUser(login);
         Publication publication = publicationService.getById(publicationId);
 
         boolean alreadyLiked =
@@ -61,6 +55,28 @@ public class LikeService {
         );
     }
 
+    @Transactional
+    public void removeLike(Long publicationId, String login) {
+        User user = findAuthenticatedUser(login);
+        publicationService.getById(publicationId);
+
+        publicationLikeRepository
+                .findByPublication_IdAndUser_Id(
+                        publicationId,
+                        user.getId()
+                )
+                .ifPresent(publicationLike -> {
+                    publicationLikeRepository.delete(publicationLike);
+                    publicationLikeRepository.flush();
+
+                    log.info(
+                            "Пользователь {} убрал лайк с публикации {}",
+                            login,
+                            publicationId
+                    );
+                });
+    }
+
     @Transactional(readOnly = true)
     public long countLikes(Long publicationId) {
         return publicationLikeRepository.countByPublication_Id(
@@ -80,5 +96,15 @@ public class LikeService {
                 publicationId,
                 user.getId()
         );
+    }
+
+    private User findAuthenticatedUser(String login) {
+        if (login == null || login.isBlank()) {
+            throw new AccessDeniedException(
+                    "Для работы с лайками необходимо войти"
+            );
+        }
+
+        return userService.getByLogin(login);
     }
 }
